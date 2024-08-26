@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login com Google</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body id="L">
+    <header>
+        <div>
+            <h1>Agenda Star</h1>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="login.html" id="authLink">Login</a>
+            </nav>
+            <br>
+            <span id="userGreeting"></span> <!-- Saudação do usuário -->
+        </div>
+    </header>
+    <div class="container">
+        <h2>Login com Google</h2>
+        <br>
+        <div id="g_id_onload"
+             data-client_id="YOUR_CLIENT_ID" <!-- Substitua pelo seu Client ID -->
+             <data-callback="handleCredentialResponse">
+        </div>
+        <div class="g_id_signin" data-type="standard"></div>
+    </div>
+</div>
+    <script src="header.js"></script>
+    <script>
+        // Função chamada quando o login é bem-sucedido
+        function handleCredentialResponse(response) {
+            // Decodifica o token ID para obter informações do usuário
+            const id_token = response.credential;
+            const payload = parseJwt(id_token);
+            
+            // Armazena o nome e o token no localStorage
+            localStorage.setItem('currentUser', JSON.stringify({
+                name: payload.name,
+                token: id_token
+            }));
+
+            // Redireciona para a página inicial após o login
+            window.location.href = 'index.html';
+        }
+
+        // Função para decodificar o JWT
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => 
+                `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`).join(''));
+            return JSON.parse(jsonPayload);
+        }
+    </script>
+</body>
+</html>
